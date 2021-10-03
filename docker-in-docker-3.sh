@@ -11,8 +11,6 @@ docker build --rm \
     -t docker-control:research-docker-in-docker \
     ./docker
 
-echo "> Create docker network and volume"
-
 echo "> Remove legacy container"
 docker rm -f docker-in-docker-control
 
