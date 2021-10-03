@@ -26,7 +26,7 @@ echo "> Call hello world in docker-in-docker"
 docker exec -ti docker-in-docker-control sh -c "docker version"
 
 echo "> Show directory in docker-in-docker call container"
-docker exec -ti docker-in-docker-control sh -c "docker run --rm -v /repo:/repo bash -l -c 'ls /repo -al'"
+docker exec -ti docker-in-docker-control sh -c "docker run --rm -v ${PWD}:/repo bash -l -c 'ls /repo -al'"
 
 echo "> Show directory in docker-in-docker container"
 docker exec -ti docker-in-docker-control sh -c "ls /repo -al"
