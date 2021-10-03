@@ -5,7 +5,8 @@ Docker-in-Docker 技術目前已知兩種方式：
 1. 啟用任意容器並掛入本機 docker.sock 網址
 2. 使用 Docker 官方提供的容器
 
-這兩種方式概念不同，但原理上後者因官方長期維護，較建議場用此方式，且當前 Jenkins、Gitlab runner 官方說明亦採用此方式。
+這兩種方式概念不同，原理上前者只是將 Socket 物件掛載入容器，讓容器可以操控上層服務，後者則是設計透過 Docker 的封閉網路，創造出巢狀 Docker-in-Docker；此外後者是由 Docker 官方維護的容器，因此建議使用此方式來確保 Docker-in-Docker 的獨立性，且當前 Jenkins 官方說明亦採用此方式。
+> [Using Docker-in-Docker for your CI or testing environment? Think twice.](https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/)
 
 ## 議題
 
@@ -16,23 +17,49 @@ Docker-in-Docker 技術目前已知兩種方式：
 
 ## 研究與測試項目
 
-### 1、Docker-in-Docker
+### 1、Use Docker-in-Docker Demo
 
 僅使用 Dokcer-in-Docker 容器驗證
 
 + Docker pull docker:binb
-+ Docerk run docker:binb -v %cd%
-+ Inside docker, use docker run debin:slim -v ${PWD}
++ Docerk run docker:latest with -v %cd%
++ Inside docker, use docker run bash with -v ```/repo:/repo```
 
-### 2、docker-compose
+```
+docker-in-docker-1.bat
+```
 
-使用 docker-compose 啟用 Docker-in-Docker 容器與藉由網路使用 Docker 服務的執行容器
+#### 設計注意事項
 
-+ Docker pull docker:binb, and Docker pull debin:slim
-+ Docerk run docker:binb and debin:slim in them same network, and -v %cd%
-+ Inside debin:slim docker, use docker run debin:slim -v ${PWD}
++ Dockert 用來儲存印象檔、容器執行狀況應為封閉的掛載體 ```/var/lib/docker```
+    - 設計原因可參考文獻 [docker-in-docker the ugly](https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/#docker-in-docker-the-ugly)
+    - 此外若在 Windows 環境，該目錄指向本機目錄，會產生 overlay2 錯誤，說明為檔案不存在等。
 
-### 3、TEST CASE 1、2 run at linux VM
+### 2、Custom docker-in-docker controller
+
+使用自行封裝的 Docker 服務的容器，並與 Docker:binb 存取服務
+
++ Docker pull docker:binb, and build docker image from ```./docker```
++ Docerk run docker:binb and custom-docker-control in them same network, and -v %cd% into control
++ Inside custom-docker-control, use docker run bash with -v ```/repo:/repo```
+
+```
+docker-in-docker-2.bat
+```
+
+### 3、Use docker.sock
+
+使用自行封裝的 Docker 服務的容器，並掛入本機 ```var/run/docker.sock``` 來存取服務
+
++ Docker build docker image from ```./docker```
++ Docerk run custom-docker-control with -v %cd% and ```//var/run/docker.sock:/var/run/docker.sock```
++ Inside custom-docker-control, use docker run bash with -v ```/repo:/repo```
+
+```
+docker-in-docker-3.bat
+```
+
+### 4、TEST CASE 1、2、3 run at linux VM
 
 由於本機為 Windows 環境，考量 Windows、Linux 環境差異，因此將啟用一個 Ubuntu 18.04 作業系統於 VirtualBox 中，並撰寫相同驗證項目於 Shell 腳本
 
@@ -43,4 +70,5 @@ Docker-in-Docker 技術目前已知兩種方式：
     - [Control Docker containers from within container](https://fredrikaverpil.github.io/2018/12/14/control-docker-containers-from-within-container/)
 + Docker-in-Docker with offical image
     - [Docker in Docker!](https://hub.docker.com/_/docker)
+    - [Running Docker in Docker on Windows (Linux containers)](https://tomgregory.com/running-docker-in-docker-on-windows/)
     - [Docker Privileged - Should You Run Privileged Docker Containers?](https://phoenixnap.com/kb/docker-privileged)
