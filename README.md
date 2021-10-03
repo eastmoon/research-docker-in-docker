@@ -63,6 +63,22 @@ docker-in-docker-3.bat
 
 由於本機為 Windows 環境，考量 Windows、Linux 環境差異，因此將啟用一個 Ubuntu 18.04 作業系統於 VirtualBox 中，並撰寫相同驗證項目於 Shell 腳本
 
++ 啟動並進入虛擬機
+
+```
+vagrant up
+vagrant ssh
+cd ~/git/research-docker-in-docker
+```
+
++ 可執行腳本
+
+```
+sudo bash docker-in-docker-1.sh
+sudo bash docker-in-docker-2.sh
+sudo bash docker-in-docker-3.sh
+```
+
 ## 參考
 
 + Docker-in-Docker with docker.sock
