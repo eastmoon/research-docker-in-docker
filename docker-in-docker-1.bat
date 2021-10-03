@@ -6,7 +6,6 @@ setlocal enabledelayedexpansion
 
 echo ^> Create case directory
 set DOCKER_CERTS=%cd%\cache\certs
-set DOCKER_LIBRARY=%cd%\cache\library
 
 echo ^> Download docker-in-docker
 docker pull docker:dind
