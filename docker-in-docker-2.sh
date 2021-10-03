@@ -31,6 +31,7 @@ docker run \
     --network-alias docker \
     -e DOCKER_TLS_CERTDIR=/certs \
     -v ${DOCKER_CERTS}:/certs \
+    -v ${PWD}:/repo \
     -v docker-library:/var/lib/docker \
     docker:dind
 

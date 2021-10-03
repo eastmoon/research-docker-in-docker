@@ -34,6 +34,7 @@ docker run ^
     -e DOCKER_TLS_CERTDIR=/certs ^
     -v !DOCKER_CERTS!:/certs ^
     -v docker-library:/var/lib/docker ^
+    -v %cd%:/repo ^
     docker:dind
 
 docker run ^
