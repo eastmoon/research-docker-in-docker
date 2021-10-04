@@ -79,6 +79,30 @@ sudo bash docker-in-docker-2.sh
 sudo bash docker-in-docker-3.sh
 ```
 
+## 小結
+
+在完成[初步版本](https://github.com/eastmoon/research-docker-in-docker/commit/11db8cd4f31fcc5dadcfc8b29abd3c896ccc15d6)時，如議題所發生的情況，其結果如下圖所示。
+
+![test result](./img/docker-in-docker-test-result-failed.png)
+
+在這結構設計下，不論任何案例，其結構都是區分為：
+
++ Daemon，實際提供 Docker 服務並保存相關快取 ( image、container etc. )
++ Control，實際執行 Docker 腳本與相關腳本操作服務
+
+在這設計下需要掛載給 Docker 的目錄，是基於相關流程中的數個步驟，請託 Docker 進行處理 ( 編譯、壓縮、上傳 etc. )；然而就如前述結果，掛載的目錄並無法看到任何內容。
+
+預想上有考慮幾個可能，目錄權限、目錄掛載方式、目錄同步速度、目錄資料流設定等，然而在 Daemon + Control 的容器下這狀況又未產生，對此提出了一項假設。
+
+**『掛載目錄與快取屬於 Docker 下的 Volume 管理，其系統是依據 Daemon 可管轄的目錄來掛載。』**
+
+基於這假設，便完成自今的更新，並得出如下圖結果：
+
+![test result](./img/docker-in-docker-test-result-successed.png)
+
+如同預期，在 Windows Case 1、2 與 Linux Case 1、2、3，僅需使用 Daemon 的目錄或掛載目錄給此容器，便可正常讓 Docker-in-Docker 內容器取得正確的資料。
+> Windows Case 3 因為無法將目錄路徑動態寫入，暫無修正方式。
+
 ## 參考
 
 + Docker-in-Docker with docker.sock
